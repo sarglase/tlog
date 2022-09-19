@@ -100,7 +100,6 @@ func (th *TextHook) cleanExpiredFiles() {
 
 func (th *TextHook) Write(message []byte) {
 	if th.needNewFile() {
-		fmt.Printf("neednew")
 		// check path files,clean up expired files
 		th.cleanExpiredFiles()
 		th.writer = nil
