@@ -1,6 +1,7 @@
 package hook
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -73,15 +74,35 @@ func (th *TextHook) checkWriter() {
 	}
 }
 
-func (th *TextHook) SetConfig(filePath, fileFormat string, maxFileNum int) {
+func (th *TextHook) SetConfig(filePath, fileFormat string, maxFileNum int) error {
+	if maxFileNum < 1 {
+		return errors.New("maxFileNum cannot less than 1")
+	}
 	th.fileFormat = fileFormat
-	th.filePath = filePath
+	th.filePath = strings.TrimRight(filePath, "/")
 	th.maxFileNum = maxFileNum
+	return nil
+}
+
+func (th *TextHook) cleanExpiredFiles() {
+	dirs, _ := os.ReadDir(th.filePath)
+	now := time.Now()
+	expiredDate := now.AddDate(0, 0, th.maxFileNum-1).Format("2006-01-02 00:00:00")
+	expiredTime, _ := time.ParseInLocation("2006-01-02 00:00:00", expiredDate, time.Local)
+	for _, v := range dirs {
+		fileInfo, _ := v.Info()
+		if fileInfo.ModTime().Sub(expiredTime) < 0 {
+			// expired,clean up
+			_ = os.Remove(th.filePath + "/" + fileInfo.Name())
+		}
+	}
 }
 
 func (th *TextHook) Write(message []byte) {
 	if th.needNewFile() {
 		fmt.Printf("neednew")
+		// check path files,clean up expired files
+		th.cleanExpiredFiles()
 		th.writer = nil
 	}
 	err := th.checkDir()
