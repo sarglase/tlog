@@ -76,7 +76,7 @@ func (tl *TLog) enable(l level) bool {
 
 var defaultTLog = &TLog{
 	Writer: os.Stdout,
-	Hook:   hook.New(),
+	Hook:   nil,
 	Level:  TraceLevel,
 	Name:   " ",
 }
@@ -170,5 +170,8 @@ func log(l level, v ...any) {
 	}
 	msg := fmt.Sprintf("%s \x1b[%dm%s%s%s %s \x1b[0m\n", now, colorLevel, prefix, defaultTLog.Name, stackInfo, logStr)
 	defaultTLog.Writer.Write([]byte(msg))
-	defaultTLog.Hook.Write([]byte(msg))
+	if defaultTLog.Hook != nil {
+		defaultTLog.Hook.Write([]byte(msg))
+	}
+
 }
