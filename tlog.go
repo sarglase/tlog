@@ -26,15 +26,15 @@ func (l level) WithPrefix() string {
 	var prefix string
 	switch l {
 	case TraceLevel:
-		prefix = "[TRACE_LEVEL]"
+		prefix = "[trace]"
 	case InfoLevel:
-		prefix = "[INFO_LEVEL]"
+		prefix = "[info]"
 	case DebugLevel:
-		prefix = "[DEBUG]"
+		prefix = "[debug]"
 	case ErrorLevel:
-		prefix = "[ERROR]"
+		prefix = "[error]"
 	case PanicLevel:
-		prefix = "[prefix]"
+		prefix = "[panic]"
 	case PrettyLevel:
 		prefix = "[pretty]"
 	default:
